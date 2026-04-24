@@ -75,12 +75,13 @@ async function generateInterViewReportController(req, res) {
             resumeText: resumeContent,
             selfDescription,
             matchScore: {
-                technicalSkills: interViewReportByAi.matchScore || 75
+                technicalSkills: interViewReportByAi.matchScore?.technicalSkills || 75,
+                overall: interViewReportByAi.matchScore?.overall || 0
             },
             technicalQuestions: interViewReportByAi.technicalQuestions || [],
-            behaviouralQuestions: interViewReportByAi.behavioralQuestions || [],
+            behaviouralQuestions: interViewReportByAi.behaviouralQuestions || interViewReportByAi.behavioralQuestions || [],
             skillGap: interViewReportByAi.skillGap || [],
-            preparationTips: interViewReportByAi.preparationTip || [],
+            preparationTips: interViewReportByAi.preparationTips || interViewReportByAi.preparationTip || [],
             user: req.user.id
         });
 

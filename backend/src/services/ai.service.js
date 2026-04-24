@@ -7,7 +7,7 @@ const ai = new GoogleGenAI({
 });
 
 const interviewReportSchema = z.object({
-    matchScore: z.number().describe("A score representing how well the candidate matches the job requirements"),
+    matchScore: z.number().describe("A score representing how well the candidate matches the job requirements (0-100)"),
     technicalQuestions: z.array(
         z.object({
             question: z.string().describe("The technical question asked during the interview"),
@@ -16,13 +16,13 @@ const interviewReportSchema = z.object({
         })
     ).describe("An array of technical questions asked during the interview"),
     
-    behavioralQuestions: z.array(
+    behaviouralQuestions: z.array(
         z.object({
-            question: z.string().describe("The behavioral question asked during the interview"),
-            intention: z.string().describe("The intention behind asking the behavioral question"),
-            answer: z.string().describe("The candidate's answer to the behavioral question"),
+            question: z.string().describe("The behavioural question asked during the interview"),
+            intention: z.string().describe("The intention behind asking the behavioural question"),
+            answer: z.string().describe("The candidate's answer to the behavioural question"),
         })
-    ).describe("An array of behavioral questions asked during the interview"),
+    ).describe("An array of behavioural questions asked during the interview"),
     
     skillGap: z.array(
         z.object({
@@ -31,7 +31,7 @@ const interviewReportSchema = z.object({
         })
     ).describe("Analysis of the candidate's skill gaps based on interview performance"),
     
-    preparationTip: z.array(
+    preparationTips: z.array(
         z.object({
             day: z.number().describe("Day number for the preparation plan"),
             focus: z.string().describe("Focus area for that day"),
@@ -42,34 +42,123 @@ const interviewReportSchema = z.object({
 
 async function generateInterviewReport({ resume, jobDescription, selfDescription }) {
     try {
-        const prompt = `Generate an interview report based on the following information:
-        
-        Resume: ${resume}
-        Job Description: ${jobDescription}
-        Self Description: ${selfDescription}
-        
-        Please provide a detailed interview report with all the required fields.`;
+        const prompt = `Generate a detailed interview report in JSON format with the following structure:
+
+{
+  "matchScore": number (0-100),
+  "technicalQuestions": [{"question": string, "intention": string, "answer": string}],
+  "behaviouralQuestions": [{"question": string, "intention": string, "answer": string}],
+  "skillGap": [{"skill": string, "severity": "low"|"medium"|"high"}],
+  "preparationTips": [{"day": number, "focus": string, "tasks": [string]}]
+}
+
+Based on:
+- Resume: ${resume}
+- Job Description: ${jobDescription}
+- Self Description: ${selfDescription}
+
+Generate at least 3 technical questions, 3 behavioural questions, 2 skill gaps, and 5 preparation tips. The answer field in questions should be based on the candidate's resume and self-description.`;
         
         // FIXED: Changed model name from "gemini-3-flash-preview" to a valid model
         const response = await ai.models.generateContent({
             model: "gemini-2.5-flash", // Valid model name
             contents: prompt,
             config: {
-                responseMimeType: "application/json",
-                responseSchema: zodToJsonSchema(interviewReportSchema)
+                responseMimeType: "application/json"
             }
         });
         
-        // Parse the response
-        const result = JSON.parse(response.text);
+        // Parse the response - handle markdown code blocks
+        let responseText = response.text;
         
-        // Ensure all required fields exist with defaults
+        // Remove markdown code blocks if present
+        if (responseText.includes('```json')) {
+            responseText = responseText.replace(/```json\n?/g, '').replace(/```\n?$/g, '');
+        } else if (responseText.includes('```')) {
+            responseText = responseText.replace(/```\n?/g, '');
+        }
+        
+        const result = JSON.parse(responseText);
+        
+        console.log("AI Response raw:", JSON.stringify(result, null, 2));
+        
+        // Helper function to parse any nested structure
+        const parseField = (data, fieldName) => {
+            console.log(`Parsing ${fieldName}:`, JSON.stringify(data, null, 2));
+            
+            if (!data) return [];
+            
+            // If it's a string, try to parse it
+            if (typeof data === 'string') {
+                let str = data.trim();
+                // Remove backticks if present
+                if (str.startsWith('`') && str.endsWith('`')) {
+                    str = str.slice(1, -1).trim();
+                }
+                try {
+                    data = JSON.parse(str);
+                } catch (e) {
+                    console.log(`Failed to parse ${fieldName}:`, e.message);
+                    return [];
+                }
+            }
+            
+            // If it's a single object, wrap in array
+            if (typeof data === 'object' && !Array.isArray(data)) {
+                if (data.question || data.day || data.skill) {
+                    return [data];
+                }
+                return [];
+            }
+            
+            // If it's an array, process each item
+            if (Array.isArray(data)) {
+                return data.map(item => {
+                    if (typeof item === 'string') {
+                        let str = item.trim();
+                        // Remove backticks
+                        if (str.startsWith('`') && str.endsWith('`')) {
+                            str = str.slice(1, -1).trim();
+                        }
+                        // Handle JSON object string
+                        if (str.startsWith('{') && str.endsWith('}')) {
+                            try {
+                                return JSON.parse(str);
+                            } catch {
+                                return null;
+                            }
+                        }
+                        // Handle JSON array string
+                        if (str.startsWith('[') && str.endsWith(']')) {
+                            try {
+                                const parsed = JSON.parse(str);
+                                if (Array.isArray(parsed)) {
+                                    return parsed[0]; // Return first item
+                                }
+                                return parsed;
+                            } catch {
+                                return null;
+                            }
+                        }
+                        return null;
+                    }
+                    return item;
+                }).filter(item => item !== null && typeof item === 'object');
+            }
+            
+            return [];
+        };
+        
+        // Ensure all required fields exist with defaults and match schema
         return {
-            matchScore: result.matchScore || 0,
-            technicalQuestions: result.technicalQuestions || [],
-            behavioralQuestions: result.behavioralQuestions || [],
-            skillGap: result.skillGap || [],
-            preparationTip: result.preparationTip || []
+            matchScore: {
+                technicalSkills: result.matchScore || 75,
+                overall: result.matchScore || 0
+            },
+            technicalQuestions: parseField(result.technicalQuestions, 'technicalQuestions'),
+            behaviouralQuestions: parseField(result.behaviouralQuestions || result.behavioralQuestions, 'behaviouralQuestions'),
+            skillGap: parseField(result.skillGap, 'skillGap'),
+            preparationTips: parseField(result.preparationTips || result.preparationTip, 'preparationTips')
         };
         
     } catch (error) {
@@ -77,7 +166,10 @@ async function generateInterviewReport({ resume, jobDescription, selfDescription
         
         // Return a default report if AI fails (for testing)
         return {
-            matchScore: 75,
+            matchScore: {
+                technicalSkills: 75,
+                overall: 75
+            },
             technicalQuestions: [
                 {
                     question: "Explain your experience with JavaScript frameworks?",
@@ -85,7 +177,7 @@ async function generateInterviewReport({ resume, jobDescription, selfDescription
                     answer: "I have worked with React and Node.js for 3 years."
                 }
             ],
-            behavioralQuestions: [
+            behaviouralQuestions: [
                 {
                     question: "Tell me about a time you faced a challenge at work?",
                     intention: "To assess problem-solving skills",
@@ -98,7 +190,7 @@ async function generateInterviewReport({ resume, jobDescription, selfDescription
                     severity: "medium"
                 }
             ],
-            preparationTip: [
+            preparationTips: [
                 {
                     day: 1,
                     focus: "Core Technical Skills",
