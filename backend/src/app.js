@@ -19,9 +19,13 @@ app.use(cors({
 
 // require all the routes here
 const authRoutes = require('./routes/auth.routes');
+const interviewRouter = require('./routes/interview.routes');
+// const { authMiddleware } = require('./middlewares/auth.middleware');
 
-// use the routes here
+// use the routes here 
+// we give the route of api here 
 app.use('/api/auth',authRoutes);
+app.use('/api/interview',interviewRouter)
 
 
 

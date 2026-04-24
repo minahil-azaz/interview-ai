@@ -25,3 +25,4 @@ async function listModels() {
 }
 
 listModels();
+console.log(listModels)
