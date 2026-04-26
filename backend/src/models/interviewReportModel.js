@@ -53,7 +53,8 @@ const interviewReportSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "users",
         required: [true, "User ID is required"]
-    }
+    },
+    title: { type: String, required: [true, "Title is required"] }
 }, { timestamps: true });
 
 const InterviewReport = mongoose.model("InterviewReport", interviewReportSchema);

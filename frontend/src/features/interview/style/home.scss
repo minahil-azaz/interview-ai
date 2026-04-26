@@ -10,55 +10,62 @@
 
 .container {
   width: 100%;
-  max-width: 1100px;
+  max-width: 1150px;
 }
 
+/* Header */
 .header {
   text-align: center;
   margin-bottom: 2rem;
 
   h1 {
-    font-size: 2.2rem;
-    font-weight: 700;
+    font-size: 2.4rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
   }
 
   p {
-    opacity: 0.7;
-    margin-top: 0.5rem;
+    opacity: 0.75;
+    font-size: 1rem;
   }
 }
 
+/* Main Grid */
 .grid {
   display: grid;
   grid-template-columns: 1.2fr 1fr;
   gap: 1.5rem;
+  margin-bottom: 2rem;
 }
 
+/* Glass Card */
 .card {
   background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
   padding: 1.2rem;
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
 
   label {
-    font-size: 0.9rem;
-    opacity: 0.8;
+    font-size: 0.92rem;
+    font-weight: 500;
+    opacity: 0.85;
   }
 
   textarea {
-    height: 200px;
+    height: 220px;
     resize: none;
     border: none;
     outline: none;
     padding: 1rem;
-    border-radius: 12px;
-    background: rgba(0,0,0,0.3);
+    border-radius: 14px;
+    background: rgba(0, 0, 0, 0.28);
     color: white;
     font-size: 0.95rem;
+    line-height: 1.5;
   }
 }
 
@@ -69,9 +76,10 @@
 }
 
 .small textarea {
-  height: 120px;
+  height: 130px;
 }
 
+/* Upload */
 .upload-box {
   display: flex;
   flex-direction: column;
@@ -79,35 +87,140 @@
 }
 
 .btn {
-  background: #4f46e5;
-  padding: 0.8rem 1rem;
-  border-radius: 12px;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  padding: 0.9rem 1rem;
+  border-radius: 14px;
   text-align: center;
   cursor: pointer;
-  font-weight: 500;
-  transition: 0.2s;
+  font-weight: 600;
+  transition: 0.25s;
 
   &:hover {
-    background: #6366f1;
+    transform: translateY(-2px);
+    opacity: 0.95;
   }
 }
 
 .hint {
-  font-size: 0.75rem;
-  opacity: 0.6;
+  font-size: 0.78rem;
+  opacity: 0.65;
 }
 
-.primary-btn {
-  padding: 0.9rem;
+.remove-file {
+  background: none;
   border: none;
-  border-radius: 12px;
+  color: #fca5a5;
+  font-size: 0.82rem;
+  cursor: pointer;
+  text-align: left;
+
+  &:hover {
+    color: white;
+  }
+}
+
+/* Button */
+.primary-btn {
+  padding: 1rem;
+  border: none;
+  border-radius: 14px;
   background: linear-gradient(135deg, #4f46e5, #7c3aed);
   color: white;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: 0.2s;
+  transition: 0.25s;
 
   &:hover {
     transform: translateY(-2px);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+/* Error */
+.error-banner {
+  background: rgba(239, 68, 68, 0.14);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 14px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  color: #fca5a5;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .close-btn {
+    background: none;
+    border: none;
+    color: #fca5a5;
+    font-size: 1.3rem;
+    cursor: pointer;
+
+    &:hover {
+      color: white;
+    }
+  }
+}
+
+/* Recent Reports */
+.recent-reports {
+  margin-top: 2rem;
+
+  h2 {
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+  }
+}
+
+.report-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.report-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  border-radius: 16px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: 0.25s;
+
+  &:hover {
+    transform: translateY(-4px);
+    border-color: rgba(124, 58, 237, 0.6);
+  }
+
+  h4 {
+    font-size: 1rem;
+    margin-bottom: 0.6rem;
+    font-weight: 700;
+  }
+
+  p {
+    font-size: 0.88rem;
+    opacity: 0.75;
+    margin-bottom: 0.35rem;
+  }
+
+  strong {
+    color: #22c55e;
+    font-size: 1rem;
+  }
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .header h1 {
+    font-size: 2rem;
   }
 }
