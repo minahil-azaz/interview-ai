@@ -1,0 +1,113 @@
+.home {
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #1a1a2e, #0f0f1a);
+  color: white;
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+  font-family: system-ui;
+}
+
+.container {
+  width: 100%;
+  max-width: 1100px;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 2rem;
+
+  h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+  }
+
+  p {
+    opacity: 0.7;
+    margin-top: 0.5rem;
+  }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 1.5rem;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+
+  label {
+    font-size: 0.9rem;
+    opacity: 0.8;
+  }
+
+  textarea {
+    height: 200px;
+    resize: none;
+    border: none;
+    outline: none;
+    padding: 1rem;
+    border-radius: 12px;
+    background: rgba(0,0,0,0.3);
+    color: white;
+    font-size: 0.95rem;
+  }
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.small textarea {
+  height: 120px;
+}
+
+.upload-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.btn {
+  background: #4f46e5;
+  padding: 0.8rem 1rem;
+  border-radius: 12px;
+  text-align: center;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.2s;
+
+  &:hover {
+    background: #6366f1;
+  }
+}
+
+.hint {
+  font-size: 0.75rem;
+  opacity: 0.6;
+}
+
+.primary-btn {
+  padding: 0.9rem;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+}

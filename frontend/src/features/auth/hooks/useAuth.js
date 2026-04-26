@@ -42,18 +42,24 @@ export const useAuth = () => {
       }
    }
 
-     useEffect(() => {
-        const getandSetUser = async () => {
-            // get the user from the backend and set it in the context
-            const data = await getMe();
-            // set the user in the context
-            setuser(data.user);
-            // set loading to false after getting the user data
-            setLoading(false);
-
-        };
-        getandSetUser();
-    }, []);
+   useEffect(() => {
+      const getAndSetUser = async () => {
+         try {
+               // get the user from the backend and set it in the context
+               const data = await getMe();
+               // set the user in the context
+               setUser(data.user);
+         } catch (error) {
+               // if there's an error (e.g. not authenticated), set user to null
+               setUser(null);
+         } finally {
+               // set loading to false after getting the user data or error
+               setLoading(false);
+         }
+      };
+      
+      getAndSetUser();
+   }, []);
 
    return { user, loading, handleLogin, handleRegister, handleLogout }
 }
