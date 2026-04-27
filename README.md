@@ -188,6 +188,3 @@ The frontend will run on `http://localhost:5173`
 | `GEMINI_API_KEY` | Gemini AI API key |
 | `PORT` | Server port (default: 3000) |
 
-## 📄 License
-
-ISC License
